@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Puyaq.Application/Puyaq.Application.csproj" />
+    <ProjectReference Include="../../src/Puyaq.Domain/Puyaq.Domain.csproj" />
+    <ProjectReference Include="../../src/Puyaq.Infrastructure/Puyaq.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

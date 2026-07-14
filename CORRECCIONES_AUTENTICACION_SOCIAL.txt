@@ -1,0 +1,29 @@
+Correcciones realizadas
+=======================
+
+1. Se eliminó la interfaz duplicada IExternalIdentityProvider de Puyaq.Infrastructure.
+2. Se conservó como contrato oficial Puyaq.Repository.Interface.IExternalIdentityProvider.
+3. ExternalIdentityProvider se movió a Puyaq.Repository.Implementation para respetar:
+   Puyaq.Application -> Puyaq.Repository -> Puyaq.Infrastructure.
+4. La inyección IExternalIdentityProvider -> ExternalIdentityProvider se registró en AddRepositories().
+5. Los validadores Google, Facebook y Apple permanecen registrados en AddInfrastructure().
+6. AuthenticationService fue limpiado:
+   - Se eliminó el método SocialLoginAsync duplicado.
+   - Se eliminó el paso de repositorio/provider como parámetros del método.
+   - Se completó la lógica de usuario externo existente, nuevo usuario y conflicto de vinculación.
+   - Se reutiliza la creación de sesión y refresh token.
+7. AuthenticationUserRecord.PasswordHash ahora acepta null para cuentas exclusivamente sociales.
+8. AuthenticationRepository usa las claves de StoreProcedures.resx en vez de nombres de SP quemados.
+9. Se agregaron al wrapper de recursos las propiedades:
+   - AuthenticationGetByExternalLogin
+   - AuthenticationRegisterExternalUser
+   - AuthenticationUpdateExternalLogin
+10. Se eliminaron DTO/interfaz antiguos y no usados de la primera propuesta social.
+
+Validación pendiente en tu entorno
+=================================
+Este contenedor no dispone del SDK de .NET 10, por lo que debes ejecutar:
+
+dotnet clean .\Puyaq.sln
+dotnet restore .\Puyaq.sln
+dotnet build .\Puyaq.sln

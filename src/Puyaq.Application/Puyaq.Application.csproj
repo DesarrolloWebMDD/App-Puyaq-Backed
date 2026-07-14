@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Puyaq.CrossCutting\Puyaq.CrossCutting.csproj" />
+    <ProjectReference Include="..\Puyaq.Domain\Puyaq.Domain.csproj" />
+    <ProjectReference Include="..\Puyaq.Repository\Puyaq.Repository.csproj" />
+  </ItemGroup>
+</Project>

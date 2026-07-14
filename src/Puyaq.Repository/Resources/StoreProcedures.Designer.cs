@@ -1,0 +1,22 @@
+using System.Globalization;
+using System.Resources;
+
+namespace Puyaq.Repository.Resources;
+
+internal static class StoreProcedures
+{
+    private static readonly ResourceManager ResourceManager =
+        new("Puyaq.Repository.Resources.StoreProcedures", typeof(StoreProcedures).Assembly);
+
+    private static string Get(string name) =>
+        ResourceManager.GetString(name, CultureInfo.InvariantCulture)
+        ?? throw new InvalidOperationException($"No existe el recurso StoreProcedures:{name}.");
+
+    internal static string AuthenticationGetByNormalizedEmail => Get(nameof(AuthenticationGetByNormalizedEmail));
+    internal static string AuthenticationRegister => Get(nameof(AuthenticationRegister));
+    internal static string AuthenticationUpdateLastLogin => Get(nameof(AuthenticationUpdateLastLogin));
+    internal static string AuthenticationSaveRefreshToken => Get(nameof(AuthenticationSaveRefreshToken));
+    internal static string AuthenticationGetByExternalLogin => Get(nameof(AuthenticationGetByExternalLogin));
+    internal static string AuthenticationRegisterExternalUser => Get(nameof(AuthenticationRegisterExternalUser));
+    internal static string AuthenticationUpdateExternalLogin => Get(nameof(AuthenticationUpdateExternalLogin));
+}

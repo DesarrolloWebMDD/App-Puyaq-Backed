@@ -1,0 +1,23 @@
+@baseUrl = https://localhost:7001
+
+### System info
+GET {{baseUrl}}/api/v1/system/info
+
+### Register
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "david@puyaq.com",
+  "password": "Puyaq123!",
+  "displayName": "David"
+}
+
+### Login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "david@puyaq.com",
+  "password": "Puyaq123!"
+}

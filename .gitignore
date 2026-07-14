@@ -1,0 +1,12 @@
+bin/
+obj/
+.vs/
+.idea/
+*.user
+*.suo
+*.cache
+TestResults/
+coverage/
+.env
+*.db
+src/Puyaq.Api/appsettings.Local.json
