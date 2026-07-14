@@ -56,19 +56,83 @@ public sealed class AuthenticationRepository(IConnectionBase connectionBase)
                 "El registro no devolvió el usuario creado.");
     }
 
-    public async Task UpdateLastLoginAsync(
-        Guid userId,
-        DateTimeOffset lastLoginAt,
-        CancellationToken cancellationToken = default)
+    public async Task UpdateExternalLoginAsync(
+     string provider,
+     string providerUserId,
+     string? email,
+     string? displayName,
+     string? profileImageUrl,
+     bool emailVerified,
+     DateTimeOffset updatedAt,
+     DateTimeOffset lastLoginAt,
+     CancellationToken cancellationToken = default)
     {
         var parameters = new[]
         {
-            new SqlParameter("@UserId", SqlDbType.UniqueIdentifier) { Value = userId },
-            new SqlParameter("@LastLoginAt", SqlDbType.DateTimeOffset) { Value = lastLoginAt }
-        };
+        new SqlParameter(
+            "@Provider",
+            SqlDbType.NVarChar,
+            30)
+        {
+            Value = provider.Trim().ToUpperInvariant()
+        },
+
+        new SqlParameter(
+            "@ProviderUserId",
+            SqlDbType.NVarChar,
+            255)
+        {
+            Value = providerUserId
+        },
+
+        new SqlParameter(
+            "@Email",
+            SqlDbType.NVarChar,
+            256)
+        {
+            Value = (object?)email ?? DBNull.Value
+        },
+
+        new SqlParameter(
+            "@DisplayName",
+            SqlDbType.NVarChar,
+            150)
+        {
+            Value = (object?)displayName ?? DBNull.Value
+        },
+
+        new SqlParameter(
+            "@ProfileImageUrl",
+            SqlDbType.NVarChar,
+            1000)
+        {
+            Value = (object?)profileImageUrl ?? DBNull.Value
+        },
+
+        new SqlParameter(
+            "@EmailVerified",
+            SqlDbType.Bit)
+        {
+            Value = emailVerified
+        },
+
+        new SqlParameter(
+            "@UpdatedAt",
+            SqlDbType.DateTimeOffset)
+        {
+            Value = updatedAt
+        },
+
+        new SqlParameter(
+            "@LastLoginAt",
+            SqlDbType.DateTimeOffset)
+        {
+            Value = lastLoginAt
+        }
+    };
 
         await connectionBase.ExecuteNonQueryAsync(
-            StoreProcedures.AuthenticationUpdateLastLogin,
+            StoreProcedures.AuthenticationUpdateExternalLogin,
             parameters,
             cancellationToken: cancellationToken);
     }
@@ -175,4 +239,75 @@ public sealed class AuthenticationRepository(IConnectionBase connectionBase)
             parameters,
             cancellationToken: cancellationToken);
     }
+
+    public async Task UpdateLastLoginAsync(
+    Guid userId,
+    DateTimeOffset lastLoginAt,
+    CancellationToken cancellationToken = default)
+    {
+        var parameters = new[]
+        {
+        new SqlParameter(
+            "@UserId",
+            SqlDbType.UniqueIdentifier)
+        {
+            Value = userId
+        },
+        new SqlParameter(
+            "@LastLoginAt",
+            SqlDbType.DateTimeOffset)
+        {
+            Value = lastLoginAt
+        }
+    };
+
+        await connectionBase.ExecuteNonQueryAsync(
+            StoreProcedures.AuthenticationUpdateLastLogin,
+            parameters,
+            cancellationToken: cancellationToken);
+    }
+    public async Task UpdateExternalLoginLastLoginAsync(
+    Guid userId,
+    string provider,
+    string providerUserId,
+    DateTimeOffset lastLoginAt,
+    CancellationToken cancellationToken = default)
+    {
+        var parameters = new[]
+        {
+        new SqlParameter(
+            "@UserId",
+            SqlDbType.UniqueIdentifier)
+        {
+            Value = userId
+        },
+        new SqlParameter(
+            "@Provider",
+            SqlDbType.NVarChar,
+            30)
+        {
+            Value = provider
+        },
+        new SqlParameter(
+            "@ProviderUserId",
+            SqlDbType.NVarChar,
+            255)
+        {
+            Value = providerUserId
+        },
+        new SqlParameter(
+            "@LastLoginAt",
+            SqlDbType.DateTimeOffset)
+        {
+            Value = lastLoginAt
+        }
+    };
+
+        await connectionBase.ExecuteNonQueryAsync(
+            StoreProcedures.AuthenticationUpdateExternalLoginLastLogin,
+            parameters,
+            cancellationToken: cancellationToken);
+    }
+
+
 }

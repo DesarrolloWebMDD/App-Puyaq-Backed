@@ -138,4 +138,7 @@
   <data name="AuthenticationUpdateExternalLogin" xml:space="preserve">
     <value>security.usp_authentication_update_external_login</value>
   </data>
+  <data name="AuthenticationUpdateExternalLoginLastLogin" xml:space="preserve">
+    <value>security.usp_authentication_update_external_login_last_login</value>
+  </data>
 </root>

@@ -19,4 +19,6 @@ internal static class StoreProcedures
     internal static string AuthenticationGetByExternalLogin => Get(nameof(AuthenticationGetByExternalLogin));
     internal static string AuthenticationRegisterExternalUser => Get(nameof(AuthenticationRegisterExternalUser));
     internal static string AuthenticationUpdateExternalLogin => Get(nameof(AuthenticationUpdateExternalLogin));
+    internal static string AuthenticationUpdateExternalLoginLastLogin => Get(nameof(AuthenticationUpdateExternalLoginLastLogin));
+
 }

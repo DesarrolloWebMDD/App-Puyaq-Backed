@@ -57,19 +57,22 @@ public sealed class AuthenticationService(
     }
 
     public async Task<AuthResponse> LoginAsync(
-        LoginRequest request,
-        CancellationToken cancellationToken = default)
+    LoginRequest request,
+    CancellationToken cancellationToken = default)
     {
         ValidateLogin(request);
 
         var normalizedEmail = User.NormalizeEmail(request.Email);
+
         var user = await repository.GetByNormalizedEmailAsync(
             normalizedEmail,
             cancellationToken);
 
         if (user is null ||
             string.IsNullOrWhiteSpace(user.PasswordHash) ||
-            !passwordService.Verify(request.Password, user.PasswordHash))
+            !passwordService.Verify(
+                request.Password,
+                user.PasswordHash))
         {
             throw new AppException(
                 "AUTH_INVALID_CREDENTIALS",
@@ -86,6 +89,7 @@ public sealed class AuthenticationService(
         }
 
         var now = clock.UtcNow;
+
         await repository.UpdateLastLoginAsync(
             user.Id,
             now,
@@ -117,16 +121,20 @@ public sealed class AuthenticationService(
 
         if (user is not null)
         {
+            await repository.UpdateLastLoginAsync(
+               user.Id,
+               now,
+               cancellationToken);
+
             await repository.UpdateExternalLoginAsync(
-                new UpdateExternalLoginCommand(
-                    identity.Provider,
-                    identity.ProviderUserId,
-                    identity.Email,
-                    identity.DisplayName,
-                    identity.ProfileImageUrl,
-                    identity.EmailVerified,
-                    now,
-                    now),
+                identity.Provider,
+                identity.ProviderUserId,
+                identity.Email,
+                identity.DisplayName,
+                identity.ProfileImageUrl,
+                identity.EmailVerified,
+                now,
+                now,
                 cancellationToken);
 
             return await CreateAuthenticatedSessionAsync(

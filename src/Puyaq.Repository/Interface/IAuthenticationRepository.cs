@@ -12,10 +12,7 @@ public interface IAuthenticationRepository
         RegisterUserCommand command,
         CancellationToken cancellationToken = default);
 
-    Task UpdateLastLoginAsync(
-        Guid userId,
-        DateTimeOffset lastLoginAt,
-        CancellationToken cancellationToken = default);
+    
 
     Task SaveRefreshTokenAsync(
         SaveRefreshTokenCommand command,
@@ -34,11 +31,28 @@ public interface IAuthenticationRepository
         CancellationToken cancellationToken = default);
 
     Task UpdateExternalLoginAsync(
-        UpdateExternalLoginCommand command,
-        CancellationToken cancellationToken = default);
+      string provider,
+      string providerUserId,
+      string? email,
+      string? displayName,
+      string? profileImageUrl,
+      bool emailVerified,
+      DateTimeOffset updatedAt,
+      DateTimeOffset lastLoginAt,
+      CancellationToken cancellationToken = default);
 
 
+    Task UpdateExternalLoginLastLoginAsync(
+    Guid userId,
+    string provider,
+    string providerUserId,
+    DateTimeOffset lastLoginAt,
+    CancellationToken cancellationToken = default);
 
+    Task UpdateLastLoginAsync(
+    Guid userId,
+    DateTimeOffset lastLoginAt,
+    CancellationToken cancellationToken = default);
 
 }
 
