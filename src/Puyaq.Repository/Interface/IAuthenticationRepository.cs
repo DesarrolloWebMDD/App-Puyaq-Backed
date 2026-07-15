@@ -1,3 +1,5 @@
+using Puyaq.Domain.Authentication.Entities;
+using Puyaq.Domain.Authentication.Enums;
 using Puyaq.Domain.Models.Authentication;
 
 namespace Puyaq.Repository.Interface;
@@ -53,6 +55,28 @@ public interface IAuthenticationRepository
     Guid userId,
     DateTimeOffset lastLoginAt,
     CancellationToken cancellationToken = default);
+
+
+    Task LinkExternalProviderAsync(
+    LinkExternalProviderCommand request,
+    CancellationToken cancellationToken);
+
+    Task<List<ExternalLogin>> GetExternalProvidersAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
+
+    Task UnlinkExternalProviderAsync(
+        Guid userId,
+        string provider,
+        CancellationToken cancellationToken);
+
+    Task<AuthenticationUserRecord?> GetByIdAsync(
+       Guid userId,
+       CancellationToken cancellationToken = default);
+
+    Task<int> CountAuthenticationMethodsAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default);
 
 }
 

@@ -2,7 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puyaq.Application.Authentication.DTOs;
 using Puyaq.Application.Authentication.Interfaces;
+using Puyaq.CrossCutting.Exceptions;
 using Puyaq.CrossCutting.Results;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Puyaq.Api.Controllers;
 
@@ -10,7 +13,7 @@ namespace Puyaq.Api.Controllers;
 /// Gestiona el registro y la autenticación de los usuarios de PUYAQ.
 /// </summary>
 [ApiController]
-[AllowAnonymous]
+//[AllowAnonymous]
 [Route("api/v1/auth")]
 [Produces("application/json")]
 public sealed class AuthController(
@@ -154,5 +157,95 @@ public sealed class AuthController(
                 "Autenticación social realizada correctamente.",
                 HttpContext.TraceIdentifier));
     }
+
+    /// <summary>
+    /// Vincula un proveedor externo a la cuenta autenticada.
+    /// </summary>
+    [Authorize]
+    [HttpPost("providers/link")]
+    public async Task<IActionResult> LinkProvider(
+    [FromBody] LinkExternalProviderRequest request,
+    CancellationToken cancellationToken)
+    {
+        var userId = GetAuthenticatedUserId();
+
+        await authenticationService.LinkExternalProviderAsync(
+            userId,
+            request,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+    /// <summary>
+    /// Obtiene los proveedores vinculados a la cuenta autenticada.
+    /// </summary>
+    [Authorize]
+    [HttpGet("providers")]
+    [ProducesResponseType(
+     typeof(ApiResponse<IReadOnlyCollection<ExternalProvider>>),
+     StatusCodes.Status200OK)]
+    public async Task<ActionResult<
+     ApiResponse<IReadOnlyCollection<ExternalProvider>>>>
+     GetProviders(
+         CancellationToken cancellationToken)
+    {
+        var userId = GetAuthenticatedUserId();
+
+        var result =
+            await authenticationService.GetExternalProvidersAsync(
+                userId,
+                cancellationToken);
+
+        return Ok(
+            ApiResponse<IReadOnlyCollection<ExternalProvider>>.Ok(
+                result,
+                "Proveedores obtenidos correctamente.",
+                HttpContext.TraceIdentifier));
+    }
+
+    /// <summary>
+    /// Desvincula un proveedor externo de la cuenta autenticada.
+    /// </summary>
+    [Authorize]
+    [HttpDelete("providers/{provider}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(
+        typeof(ApiError),
+        StatusCodes.Status404NotFound)]
+    [ProducesResponseType(
+        typeof(ApiError),
+        StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> UnlinkProvider(
+        [FromRoute] string provider,
+        CancellationToken cancellationToken)
+    {
+        var userId = GetAuthenticatedUserId();
+
+        await authenticationService.UnlinkExternalProviderAsync(
+            userId,
+            provider,
+            cancellationToken);
+
+        return NoContent();
+    }
+
+    #region Methodos privados
+    private Guid GetAuthenticatedUserId()
+    {
+        var userIdValue = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        if (!Guid.TryParse(userIdValue, out var userId))
+        {
+            throw new AppException(
+                "AUTH_INVALID_USER_CLAIM",
+                "El token no contiene un identificador de usuario válido.",
+                StatusCodes.Status401Unauthorized);
+        }
+
+        return userId;
+    }
+    #endregion
 
 }

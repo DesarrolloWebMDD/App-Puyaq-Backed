@@ -141,4 +141,19 @@
   <data name="AuthenticationUpdateExternalLoginLastLogin" xml:space="preserve">
     <value>security.usp_authentication_update_external_login_last_login</value>
   </data>
+  <data name="AuthenticationGetUserById" xml:space="preserve">
+    <value>security.usp_authentication_get_user_by_id</value>
+  </data>
+  <data name="AuthenticationGetExternalProviders" xml:space="preserve">
+    <value>security.usp_authentication_get_external_providers</value>
+  </data>
+  <data name="AuthenticationLinkExternalProvider" xml:space="preserve">
+    <value>security.usp_authentication_link_external_provider</value>
+  </data>
+  <data name="AuthenticationCountMethods" xml:space="preserve">
+    <value>security.usp_authentication_count_methods</value>
+  </data>
+  <data name="AuthenticationUnlinkExternalProvider" xml:space="preserve">
+    <value>security.usp_authentication_unlink_external_provider</value>
+  </data>
 </root>

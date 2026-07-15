@@ -1,4 +1,6 @@
 using Microsoft.Data.SqlClient;
+using Puyaq.Domain.Authentication.Entities;
+using Puyaq.Domain.Authentication.Enums;
 using Puyaq.Domain.Models.Authentication;
 using Puyaq.Infrastructure.Interface;
 using Puyaq.Repository.Interface;
@@ -309,5 +311,186 @@ public sealed class AuthenticationRepository(IConnectionBase connectionBase)
             cancellationToken: cancellationToken);
     }
 
+    //-----------
+    public Task<AuthenticationUserRecord?> GetByIdAsync(
+       Guid userId,
+       CancellationToken cancellationToken = default)
+    {
+        List<SqlParameter> parameters = new()
+        {
+            new SqlParameter(
+                "@UserId",
+                SqlDbType.UniqueIdentifier)
+            {
+                Value = userId
+            }
+        };
 
+        return connectionBase
+            .ExecuteSingleAsync<AuthenticationUserRecord>(
+                StoreProcedures.AuthenticationGetUserById,
+                parameters,
+                cancellationToken: cancellationToken);
+    }
+
+    public Task<List<ExternalLogin>> GetExternalProvidersAsync(
+     Guid userId,
+     CancellationToken cancellationToken = default)
+    {
+        List<SqlParameter> parameters = new()
+    {
+        new SqlParameter(
+            "@UserId",
+            SqlDbType.UniqueIdentifier)
+        {
+            Value = userId
+        }
+    };
+
+        return connectionBase
+            .ExecuteListAsync<ExternalLogin>(
+                StoreProcedures.AuthenticationGetExternalProviders,
+                parameters,
+                cancellationToken: cancellationToken);
+    }
+
+  
+
+    public async Task<int> CountAuthenticationMethodsAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default)
+    {
+        List<SqlParameter> parameters = new()
+        {
+            new SqlParameter(
+                "@UserId",
+                SqlDbType.UniqueIdentifier)
+            {
+                Value = userId
+            }
+        };
+
+        var result =
+            await connectionBase
+                .ExecuteSingleAsync<AuthenticationMethodCountRecord>(
+                    StoreProcedures.AuthenticationCountMethods,
+                    parameters,
+                    cancellationToken: cancellationToken);
+
+        return result?.AuthenticationMethodCount ?? 0;
+    }
+
+    public async Task UnlinkExternalProviderAsync(
+        Guid userId,
+        string provider,
+        CancellationToken cancellationToken = default)
+    {
+        List<SqlParameter> parameters = new()
+        {
+            new SqlParameter(
+                "@UserId",
+                SqlDbType.UniqueIdentifier)
+            {
+                Value = userId
+            },
+
+            new SqlParameter(
+                "@Provider",
+                SqlDbType.NVarChar,
+                30)
+            {
+                Value = provider
+            }
+        };
+
+        await connectionBase.ExecuteNonQueryAsync(
+            StoreProcedures.AuthenticationUnlinkExternalProvider,
+            parameters,
+            cancellationToken: cancellationToken);
+    }
+  
+
+    public async Task LinkExternalProviderAsync(
+        LinkExternalProviderCommand request, 
+        CancellationToken cancellationToken)
+    {
+        List<SqlParameter> parameters = new()
+        {
+            new SqlParameter(
+                "@Id",
+                SqlDbType.UniqueIdentifier)
+            {
+                Value = request.Id
+            },
+
+            new SqlParameter(
+                "@UserId",
+                SqlDbType.UniqueIdentifier)
+            {
+                Value = request.UserId
+            },
+
+            new SqlParameter(
+                "@Provider",
+                SqlDbType.NVarChar,
+                30)
+            {
+                Value = request.Provider
+            },
+
+            new SqlParameter(
+                "@ProviderUserId",
+                SqlDbType.NVarChar,
+                255)
+            {
+                Value = request.ProviderUserId
+            },
+
+            new SqlParameter(
+                "@Email",
+                SqlDbType.NVarChar,
+                256)
+            {
+                Value = (object?)request.Email
+                    ?? DBNull.Value
+            },
+
+            new SqlParameter(
+                "@DisplayName",
+                SqlDbType.NVarChar,
+                150)
+            {
+                Value = (object?)request.DisplayName
+                    ?? DBNull.Value
+            },
+
+            new SqlParameter(
+                "@ProfileImageUrl",
+                SqlDbType.NVarChar,
+                1000)
+            {
+                Value = (object?)request.ProfileImageUrl
+                    ?? DBNull.Value
+            },
+
+            new SqlParameter(
+                "@EmailVerified",
+                SqlDbType.Bit)
+            {
+                Value = request.EmailVerified
+            },
+
+            new SqlParameter(
+                "@CreatedAt",
+                SqlDbType.DateTimeOffset)
+            {
+                Value = request.CreatedAt
+            }
+        };
+
+        await connectionBase.ExecuteNonQueryAsync(
+            StoreProcedures.AuthenticationLinkExternalProvider,
+            parameters,
+            cancellationToken: cancellationToken);
+    }
 }
