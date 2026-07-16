@@ -195,13 +195,15 @@ public sealed class ConnectionBase : IConnectionBase
          * Esto permite mapear records posicionales.
          */
         var constructor = type
-            .GetConstructors()
-            .OrderByDescending(item =>
-                item.GetParameters().Length)
-            .FirstOrDefault(item =>
-                item.GetParameters().All(parameter =>
-                    parameter.Name is not null &&
-                    columns.ContainsKey(parameter.Name)));
+        .GetConstructors()
+        .Where(item =>
+            item.GetParameters().Length > 0)
+        .OrderByDescending(item =>
+            item.GetParameters().Length)
+        .FirstOrDefault(item =>
+            item.GetParameters().All(parameter =>
+                parameter.Name is not null &&
+                columns.ContainsKey(parameter.Name)));
 
         if (constructor is not null)
         {

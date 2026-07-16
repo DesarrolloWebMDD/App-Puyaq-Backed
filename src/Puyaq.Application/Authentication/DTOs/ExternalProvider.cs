@@ -6,18 +6,19 @@
     /// </summary>
     public sealed class ExternalProvider
     {
-        public string Provider { get; init; } = string.Empty;
+        public string Provider { get; set; } =
+            string.Empty;
 
-        public string? Email { get; init; }
+        public string? Email { get; set; }
 
-        public string? DisplayName { get; init; }
+        public string? DisplayName { get; set; }
 
-        public string? ProfileImageUrl { get; init; }
+        public string? ProfileImageUrl { get; set; }
 
-        public bool EmailVerified { get; init; }
+        public bool EmailVerified { get; set; }
 
-        public DateTimeOffset CreatedAt { get; init; }
+        public DateTimeOffset CreatedAt { get; set; }
 
-        public DateTimeOffset? LastLoginAt { get; init; }
+        public DateTimeOffset? LastLoginAt { get; set; }
     }
 }
